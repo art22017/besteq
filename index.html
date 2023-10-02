@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Equations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            border-radius: 50px;
+            padding: 20px;
+        }
+
+        header, footer {
+            padding: 10px;
+            background-color: #2b7cff;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .form-input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 30%;
+        }
+
+        .form-button {
+            background-color: #2b7cff;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .form-button:hover {
+            background-color: #1c53ab;
+        }
+
+        .result {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f1f1f1;
+        }
+
+        .toggle-container {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .toggle-button {
+            background-color: #2b7cff;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .toggle-button.selected {
+            background-color: #1c53ab;
+        }
+
+        /* Оптимизации для разных типов устройств */
+        @media (max-width: 800px) {
+            .container {
+                border-radius: 20px;
+            }
+
+            header, footer {
+                border-radius: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Best Equations - калькулятор квадратного уравнения</h1>
+    </header>
+
+    <div class="container">
+        <div class="title">Вычисление квадратного уравнения вида ax^2+bx+c=0</div>
+        <div class="form">
+            <div class="form-group">
+                <label class="form-label">Коэффициент a:</label>
+                <input class="form-input" type="number" name="a" step="any" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Коэффициент b:</label>
+                <input class="form-input" type="number" name="b" step="any" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Коэффициент c:</label>
+                <input class="form-input" type="number" name="c" step="any" required>
+            </div>
+            <button class="form-button" type="submit" onclick="calculate()">Вычислить</button>
+        </div>
+
+        <div class="result">
+            
+            <div class="result-label">Ответ:</div>
+            <div class="result-value" id="answer"></div>
+
+            <div class="result-label">Ход решения (через дискриминант):</div>
+            <div class="result-value" id="solution-discriminant"></div>
+
+            <div class="result-label">Ход решения (через теорему Виета):</div>
+            <div class="result-value" id="solution-vieta"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2023 artdevelop study. Все права защищены.</p>
+    </footer>
+
+    <script>
+        function toggleSolutionDisplay(displayType) {
+            var displayElements = document.querySelectorAll('.result-value');
+            displayElements.forEach(function(element) {
+                element.style.display = 'none';
+            });
+
+            var selectedButton = document.querySelector('.toggle-button.selected');
+            selectedButton.classList.remove('selected');
+
+            var targetElement = document.getElementById("answer");
+            var targetButton = document.querySelector('.toggle-button');
+
+            if (displayType === 'solution') {
+                targetElement = document.querySelector('.result-value:not(#answer)');
+                targetButton = document.querySelector('.toggle-button:last-child');
+            }
+
+            targetElement.style.display = 'block';
+            targetButton.classList.add('selected');
+        }
+
+        function calculate() {
+            var a = parseFloat(document.querySelector('input[name="a"]').value);
+            var b = parseFloat(document.querySelector('input[name="b"]').value);
+            var c = parseFloat(document.querySelector('input[name="c"]').value);
+
+            var discriminant = b * b - 4 * a * c;
+
+            var answer = "";
+            if (discriminant > 0) {
+                var x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+                var x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+                answer = "Корни уравнения: x1 = " + x1 + ", x2 = " + x2;
+            } else if (discriminant === 0) {
+                var x = -b / (2 * a);
+                answer = "Уравнение имеет один корень, т.к дискриминант равен 0: x = " + x;
+            } else {
+                answer = "Уравнение не имеет действительных корней, т.к дискриминант меньше 0";
+            }
+
+            var solutionDiscriminant = "Посчитаем дискриминант по формуле и сравним с нулём: D=b^2-4ac = " + discriminant + "\n\n" + answer;
+            var solutionVieta = "Теорема Виета: сумма корней = -b/a = " + (-b / a) + ", произведение корней = c/a = " + (c / a) + "\n\nМетодом подбора находим корни";
+
+            document.getElementById("answer").textContent = answer;
+            document.getElementById("solution-discriminant").textContent = solutionDiscriminant;
+            document.getElementById("solution-vieta").textContent = solutionVieta;
+
+            document.querySelector('.result').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
